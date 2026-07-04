@@ -5,10 +5,10 @@ from utils import (
     extract_text_from_pdf, 
     preprocess_text, 
     generate_embedding, 
-    compute_similarity, 
     extract_skills, 
     generate_ai_summary
 )
+from models.vector_db import HybridVectorDB
 
 def main():
     st.set_page_config(page_title="AI Resume Screener", layout="wide")
@@ -42,46 +42,51 @@ def main():
                 jd_embedding = generate_embedding(jd_clean)
                 jd_skills = extract_skills(jd_text)
                 
-            results = []
+            # Initialize FAISS Vector Database
+            vector_db = HybridVectorDB(embedding_dim=len(jd_embedding))
+            
             progress_bar = st.progress(0)
             
             for i, resume_file in enumerate(resume_files):
                 progress_bar.progress((i) / len(resume_files), text=f"Processing {resume_file.name}...")
                 
-                # Text Extraction
                 res_text = extract_text_from_pdf(resume_file)
                 
                 if not res_text.strip():
                     st.warning(f"Could not extract text from {resume_file.name}. Skipping.")
                     continue
                     
-                # NLP Preprocessing
                 res_clean = preprocess_text(res_text)
-                
-                # Semantic Embedding
                 res_embedding = generate_embedding(res_clean)
-                
-                # Cosine Similarity
-                similarity = compute_similarity(jd_embedding, res_embedding)
-                match_score = similarity * 100
-                
-                # Skill Extraction
                 res_skills = extract_skills(res_text)
                 
-                # AI Summary
-                summary = generate_ai_summary(res_skills, jd_skills, match_score)
+                # Add to Vector Database
+                vector_db.add_resume(
+                    candidate_name=resume_file.name.replace('.pdf', ''),
+                    embedding=res_embedding,
+                    skills=res_skills
+                )
+                
+            progress_bar.progress(1.0, text="Processing Complete!")
+            
+            # Perform FAISS Hybrid Search
+            search_results = vector_db.hybrid_search(jd_embedding, jd_skills, k=len(resume_files))
+            
+            results = []
+            for res in search_results:
+                candidate_data = vector_db.candidates[res["candidate_idx"]]
+                match_score = res["hybrid_score"] * 100
+                
+                summary = generate_ai_summary(candidate_data["skills"], jd_skills, match_score)
                 
                 results.append({
-                    "Candidate Name": resume_file.name.replace('.pdf', ''),
+                    "Candidate Name": res["name"],
                     "Match Score": match_score,
                     "Strengths": summary["strengths"],
                     "Missing Skills": summary["missing_skills"],
                     "Recommendation": summary["recommendation"]
                 })
-                
-            progress_bar.progress(1.0, text="Processing Complete!")
             
-            # Display Results
             if results:
                 st.header("Analysis Results")
                 
@@ -109,6 +114,8 @@ def main():
                     st.markdown("Recommendation")
                     st.markdown(row["Recommendation"])
                     st.markdown("---")
+            
+            st.markdown("<br><hr><center>Built by <b>Shadab Jamadar</b></center>", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
