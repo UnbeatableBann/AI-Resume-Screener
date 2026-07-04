@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "AI-powered Resume Screening and Candidate Ranking System"
 authors = [{name = "Shadab Jamadar"}]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "groq==1.5.0",
     "nltk==3.9.4",

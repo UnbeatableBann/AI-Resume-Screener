@@ -35,14 +35,9 @@ See `pyproject.toml` for the full list of dependencies.
 
 ## Installation & How to Run
 
-1. Clone or download this repository.
-2. Navigate to the project directory:
+1. Clone or download this repository and navigate to the project root directory.
 
-   ```bash
-   cd resume_screener
-   ```
-
-3. Create a virtual environment and install dependencies using `uv`:
+2. Create a virtual environment and install dependencies using `uv`:
 
    ```bash
    uv venv
@@ -58,7 +53,7 @@ See `pyproject.toml` for the full list of dependencies.
 ## Folder Structure
 
 ```text
-resume_screener/
+.
 │
 ├── app.py
 ├── utils.py
