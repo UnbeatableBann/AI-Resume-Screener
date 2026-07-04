@@ -1,0 +1,20 @@
+[project]
+name = "resume-screener"
+version = "0.1.0"
+description = "AI-powered Resume Screening and Candidate Ranking System"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "groq",
+    "nltk",
+    "numpy",
+    "openai",
+    "pandas",
+    "pdfplumber",
+    "pypdf2",
+    "scikit-learn",
+    "sentence-transformers",
+    "spacy",
+    "streamlit",
+    "torchvision",
+]
