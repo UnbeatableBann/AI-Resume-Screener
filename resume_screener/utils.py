@@ -1,10 +1,3 @@
-"""
-utils.py
-Contains utility functions for the AI Resume Screener project.
-Includes text extraction, NLP preprocessing, embedding generation, 
-similarity computation, and skill extraction.
-"""
-
 import re
 import PyPDF2
 import pdfplumber
@@ -15,7 +8,6 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 def setup_nlp():
-    """Download required NLTK data and spaCy models."""
     try:
         nltk.data.find('corpora/stopwords')
     except LookupError:
@@ -36,10 +28,6 @@ stop_words = set(stopwords.words('english'))
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def extract_text_from_pdf(pdf_file):
-    """
-    Extracts text from a PDF file using pdfplumber.
-    Falls back to PyPDF2 if pdfplumber fails.
-    """
     text = ""
     try:
         with pdfplumber.open(pdf_file) as pdf:
@@ -65,13 +53,6 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 def preprocess_text(text):
-    """
-    Perform preprocessing:
-    - Lowercase conversion
-    - Remove non-alphanumeric characters
-    - Tokenization and Lemmatization (via spaCy)
-    - Stopword removal (via NLTK)
-    """
     if not text:
         return ""
     
@@ -94,17 +75,12 @@ def preprocess_text(text):
     return " ".join(cleaned_tokens)
 
 def generate_embedding(text):
-    """Generate semantic embeddings using Sentence Transformers."""
     return model.encode(text)
 
 def compute_similarity(emb1, emb2):
-    """Compute cosine similarity between two embeddings."""
     return cosine_similarity([emb1], [emb2])[0][0]
 
 def extract_skills(text):
-    """
-    Extracts important technical skills from the text using a predefined list.
-    """
     common_skills = {
         "python", "java", "c++", "c#", "javascript", "typescript", "html", "css",
         "sql", "nosql", "mongodb", "postgresql", "mysql", "react", "angular", "vue",
@@ -127,10 +103,6 @@ def extract_skills(text):
     return extracted
 
 def generate_ai_summary(resume_skills, jd_skills, match_score):
-    """
-    Generates an AI Candidate Summary using a deterministic rule-based fallback.
-    It identifies strengths, missing skills, and provides a hiring recommendation.
-    """
     present_skills = resume_skills.intersection(jd_skills)
     missing_skills = jd_skills.difference(resume_skills)
     
