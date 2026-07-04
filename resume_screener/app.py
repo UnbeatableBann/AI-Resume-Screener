@@ -89,6 +89,7 @@ def main():
             
             if results:
                 st.header("Analysis Results")
+                st.write("Click on a candidate to view their detailed screening analysis.")
                 
                 # Data Processing using pandas and NumPy
                 df_results = pd.DataFrame(results)
@@ -97,23 +98,24 @@ def main():
                 for _, row in df_results.iterrows():
                     match_percentage = int(np.round(row['Match Score']))
                     
-                    st.markdown(f"Candidate Name: {row['Candidate Name']}")
-                    st.markdown(f"Match Score: {match_percentage}%")
-                    st.markdown("")
-                    
-                    st.markdown("Strengths")
-                    for skill in row["Strengths"]:
-                        st.markdown(f"* {skill.title()}")
+                    # Display as a clickable list using expanders
+                    with st.expander(f"Candidate: {row['Candidate Name']} | Match: {match_percentage}%"):
+                        st.markdown(f"Candidate Name: {row['Candidate Name']}")
+                        st.markdown(f"Match Score: {match_percentage}%")
+                        st.markdown("")
                         
-                    st.markdown("")
-                    st.markdown("Missing Skills")
-                    for skill in row["Missing Skills"]:
-                        st.markdown(f"* {skill.title()}")
-                        
-                    st.markdown("")
-                    st.markdown("Recommendation")
-                    st.markdown(row["Recommendation"])
-                    st.markdown("---")
+                        st.markdown("Strengths")
+                        for skill in row["Strengths"]:
+                            st.markdown(f"* {skill.title()}")
+                            
+                        st.markdown("")
+                        st.markdown("Missing Skills")
+                        for skill in row["Missing Skills"]:
+                            st.markdown(f"* {skill.title()}")
+                            
+                        st.markdown("")
+                        st.markdown("Recommendation")
+                        st.markdown(row["Recommendation"])
             
             st.markdown("<br><hr><center>Built by <b>Shadab Jamadar</b></center>", unsafe_allow_html=True)
 
